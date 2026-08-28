@@ -323,7 +323,7 @@ def main():
         print("6.exit")
         
 
-        choice = input("\nchoose an option; type 1-5:")
+        choice = input("\nchoose an option; type 1-6:")
 
         if choice == "1":
             add_record()
@@ -345,7 +345,7 @@ def main():
             print("Until next timme!")
             break
         else:
-            print("please enter an number between 1 and 5.\n")
+            print("please enter an number between 1 and 6.\n")
 
 if __name__ == "__main__":
     main()
