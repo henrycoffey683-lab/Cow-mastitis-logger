@@ -192,7 +192,7 @@ def print_table(records):
             max(len(header), widest_value)
         )
     header_row =" | ".join(
-        header.Ijust(column_widths[i])
+        header.ljust(column_widths[i])
         for i, header in enumerate(HEADERS)
     )
     print(header_row)
@@ -203,7 +203,7 @@ def print_table(records):
 
     for record in records:
         row = " | ".join(
-            str(record.get(header, "")).Ijust(column_widths[i])
+            str(record.get(header, "")).ljust(column_widths[i])
             for i, header in enumerate(HEADERS)
         )
         print(row)
