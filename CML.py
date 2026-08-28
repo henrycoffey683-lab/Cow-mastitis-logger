@@ -1,7 +1,7 @@
 import csv
 from datetime import date
 import os
-
+from datetime import date, datetime, timedelta
 
 
 FILENAME = "mastitis_log.csv"
@@ -14,7 +14,98 @@ def setup_file():
             writer= csv.writer(file)
             writer.writerow(HEADERS)
             
-        
+def mastitis_report():
+    print("\n--- Mastitis Report ---")
+
+
+    today = date.today()
+
+    #work out the current reporting period.
+    # the period starts on the 15th and ends on the 14 of the next month
+    if today.day >= 15:
+        start_date = date(today.year, today.month, 15) 
+    else:
+        #go back to the previous 15th of the month
+        if today.month == 1:
+            start_date = date(today.year - 1, 12, 15)    
+        else:
+            start_date = date(today.year, today.month - 1, 15)
+    # calculate next months 15th then subtract one day
+    if start_date.month == 12:
+        next_month_15th = date(start_date.year + 1, 1, 15)
+    else:
+        next_month_15th = date(
+            start_date.year,
+            start_date.month + 1,
+        )
+
+    end_date = next_month_15th - timedelta(days=1)
+    found_records = []
+
+    with open(FILENAME, "r", newline="") as file:
+        reader = csv.DictReader(file)
+
+
+        for row in reader:
+            try:
+                record_date = datetime.strptime(
+                    row["Date}"], "%Y-%m-%d"
+                ).date()
+
+                if start_date <= record_date <= end_date:
+                    found_records.append(row)
+
+            except ValueError:
+                #skipp records with an invalid date
+                pass
+
+
+    print(
+
+        f"\nReporting period: "
+        f"{start_date.strftime('%d %B %Y')} to "
+        f"{end_date.strftime('%d %B %Y')}"
+    )
+
+    # add the reports folder 
+    os.makedirs("reports", exist_ok=True)
+    report_filename = (
+        f"reports/mastitis_report_"
+        f"{start_date}_to_{end_date}.csv"
+    )
+    with open(report_filename, "w", newline="") as report_file:
+        writer = csv.DictWriter(
+            report_file,
+            fieldnames=HEADERS
+        )
+
+        writer.writeheader()
+        writer.writerows(found_records)
+
+
+
+
+
+    if not found_records:
+        print("\nNo mastitis records found for this reporting period.")
+    else:
+        print("\n" + " | ".join(HEADERS))
+        print("-" * 100)
+
+        for number, record in enumerate(found_records, start=1):
+            print(
+                f"{number}. {record['Date']} | "
+                f"{record['Cow ID']}  | "
+                f"{record['Quarter']}  | "
+                f"{record['Symptoms']}  | "
+                f"{record['Severity']}  | "
+                f"{record['Notes']}"
+            )
+        print(f"\nTotal records: {len(found_records)}")
+    print(f"\n Report saved as: {report_filename}")
+
+    input("\nPress Enter to returnto the main menu")
+
 
 
 def get_input(prompt):
@@ -70,22 +161,52 @@ def view_records():
     print("\n --- All Cow Records ---")
 
     with open(FILENAME, "r", newline="") as file:
-        reader = csv.reader(file)
+        reader = csv.DictReader(file)
         records = list(reader)
 
-        if len(records) <=1:
+        if not records:
             print("No Records have been added yet.")
         
 
         else:
-            print(" | ".join(HEADERS))
-            print("-" * 100)
-
-            for number, row in enumerate(records[1:], start=1):
-                print(f"{number}. " + " | ".join(row))
+            print_table(records)
+            print(f"\nTotal records: {len(records)}")
 
 
             input("\nPress enter to return to the main menu.")
+
+def print_table(records):
+    """display records in a neatly formatted table"""
+
+    if not records:
+        print("no records found.")
+        return
+    column_widths = []
+
+    for i, header in enumerate(HEADERS):
+        widest_value = max(
+            len(str(row.get(header, "")))
+            for row in records
+        )
+        column_widths.append(
+            max(len(header), widest_value)
+        )
+    header_row =" | ".join(
+        header.Ijust(column_widths[i])
+        for i, header in enumerate(HEADERS)
+    )
+    print(header_row)
+
+    print("-+-".join(
+        "-" * width for width in column_widths
+    ))
+
+    for record in records:
+        row = " | ".join(
+            str(record.get(header, "")).Ijust(column_widths[i])
+            for i, header in enumerate(HEADERS)
+        )
+        print(row)
     
 
 def search_records():
@@ -114,6 +235,10 @@ def search_records():
         print("No records found for that Cow ID.")
 
     input("\nPress enter to return to the main menu.")
+
+
+
+
 def edit_record():
     print("\n--- Edit cow record---")
     print("type cancel to return to main menu")
@@ -193,8 +318,10 @@ def main():
         print("1.Add a record")
         print("2.View all records")
         print("3.Search by Cow ID")
-        print("5.Edit cow records")
-        print("5.exit")
+        print("4.Edit cow records")
+        print("5. mastitis montly record")
+        print("6.exit")
+        
 
         choice = input("\nchoose an option; type 1-5:")
 
@@ -211,6 +338,10 @@ def main():
             edit_record()
 
         elif choice == "5":
+            mastitis_report()
+    
+
+        elif choice == "6":
             print("Until next timme!")
             break
         else:
