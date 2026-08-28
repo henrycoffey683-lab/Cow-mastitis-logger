@@ -57,7 +57,7 @@ def add_record():
     with open("mastitis_log.csv", "a", newline="") as file:
         writer = csv.writer(file)
         writer.writerow([
-            date.today,
+            date.today(),
             cow_id,
             quarter,
             symptoms,
