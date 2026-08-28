@@ -7,7 +7,7 @@ def add_record():
     quarter = input("Quarter: ")
     symtoms = input("Symtoms: ")
     severity = input("Severtity: (1-5): ")
-    notes = input("any additional notes" )
+    notes = input("any additional notes: " )
     today =  date.today()
 
     with open("mastitis_log.csv", "a", newline="") as file:
@@ -20,7 +20,7 @@ def add_record():
             severity,
             notes
         ])
-      print ("Record saves successfully!")
+    print ("Record saved successfully!")
 
 
 print("cow health logger")
