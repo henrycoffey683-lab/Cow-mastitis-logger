@@ -78,6 +78,8 @@ def view_records():
         
 
         else:
+            print(" | ".join(HEADERS))
+            print("-" * 100)
 
             for number, row in enumerate(records[1:], start=1):
                 print(f"{number}. " + " | ".join(row))
