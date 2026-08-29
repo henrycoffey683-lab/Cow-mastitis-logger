@@ -268,7 +268,7 @@ def edit_record():
     ]
 
     if not matching_indexes:
-        print("no records with that cow ID")
+        print("No records with that cow ID")
         input("\npress enter to return to main menu")
         return
     print("\nwatching records:")
@@ -276,10 +276,10 @@ def edit_record():
         record = records[index]
         print(
             f"\n{number}. Date: {record['Date']} | "
-            f" quarter: {record['quarter']} | "
-            f"symptoms: {record['symptoms']} | "
+            f" quarter: {record['Quarter']} | "
+            f"symptoms: {record['Symptoms']} | "
         )
-    choice = input("\n enter the record number to edit: ")
+    choice = input("\n Enter the record number to edit: ")
     if choice.lower() == "cancel":
         return
     try:
@@ -311,8 +311,8 @@ def edit_record():
         writer.writeheader()
         writer.writerows(records)
 
-    print("\n record updated successfully!")
-    input("\n press enter to return to the main menu")
+    print("\n Record updated successfully!")
+    input("\n Press enter to return to the main menu")
 
 
 
@@ -327,8 +327,8 @@ def main():
         print("2.View all records")
         print("3.Search by Cow ID")
         print("4.Edit cow records")
-        print("5. mastitis montly record")
-        print("6.exit")
+        print("5.Mastitis montly record")
+        print("6.Exit")
         
 
         choice = input("\nchoose an option; type 1-6:")
@@ -350,7 +350,7 @@ def main():
     
 
         elif choice == "6":
-            print("Until next timme!")
+            print("Until next time!")
             break
         else:
             print("please enter an number between 1 and 6.\n")
