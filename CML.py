@@ -6,10 +6,17 @@ from datetime import date, datetime, timedelta
 
 FILENAME = "mastitis_log.csv"
 
-HEADERS = ["Date", "Cow_ID", "Quarter", "Symtoms", "Severity", "Notes"]
+HEADERS = [
+    "Date",
+    "Cow_ID",
+    "Quarter",
+    "Symptoms",
+    "Severity",
+    "Notes"
+    ]
 
 def setup_file():
-    if not os.path.exists(FILENAME):
+    if not os.path.exists(FILENAME) or os.path.getsize(FILENAME) ==0:
         with open(FILENAME, "w", newline="") as file:
             writer= csv.writer(file)
             writer.writerow(HEADERS)
@@ -37,6 +44,7 @@ def mastitis_report():
         next_month_15th = date(
             start_date.year,
             start_date.month + 1,
+            15
         )
 
     end_date = next_month_15th - timedelta(days=1)
@@ -49,7 +57,7 @@ def mastitis_report():
         for row in reader:
             try:
                 record_date = datetime.strptime(
-                    row["Date}"], "%Y-%m-%d"
+                    row["Date"], "%Y-%m-%d"
                 ).date()
 
                 if start_date <= record_date <= end_date:
@@ -95,7 +103,7 @@ def mastitis_report():
         for number, record in enumerate(found_records, start=1):
             print(
                 f"{number}. {record['Date']} | "
-                f"{record['Cow ID']}  | "
+                f"{record['Cow_ID']}  | "
                 f"{record['Quarter']}  | "
                 f"{record['Symptoms']}  | "
                 f"{record['Severity']}  | "
@@ -121,7 +129,7 @@ def add_record():
     print ("type 'cancel' at any time to return to main menu\n")
 
 
-    cow_id = get_input("Cow ID: ")
+    cow_id = get_input("Cow_ID: ")
     if cow_id is None:
         print("adding record cancelled\n ")
         return
@@ -158,7 +166,7 @@ def add_record():
     print ("Record saved successfully!\n")
 
 def view_records():
-    print("\n --- All Cow Records ---")
+    print("\n --- All Cow Records ---\n")
 
     with open(FILENAME, "r", newline="") as file:
         reader = csv.DictReader(file)
@@ -211,7 +219,7 @@ def print_table(records):
 
 def search_records():
     print("\n--- Search Cow Records ---")
-    print("type cancel to return to main menu")
+    print("type cancel to return to main menu\n")
 
     cow_id = input("Enter Cow ID to search: ")
 
@@ -225,11 +233,11 @@ def search_records():
         reader = csv.DictReader(file)
 
         for row in reader:
-            if row["Cow ID"].lower() ==cow_id.lower():
+            if row["Cow_ID"].lower() == cow_id.lower():
                 print("\nRecord found:")
                 for key, value in row.items():
                     print(f"{key}: {value}")
-                    found = True
+                found = True
 
     if not found:
         print("No records found for that Cow ID.")
@@ -256,7 +264,7 @@ def edit_record():
     # find record belonging to this cow
     matching_indexes = [
         index for index, record in enumerate(records)
-        if record["cow ID"].lower() == cow_id.lower()
+        if record["Cow_ID"].lower() == cow_id.lower()
     ]
 
     if not matching_indexes:
